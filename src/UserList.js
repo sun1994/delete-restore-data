@@ -4,13 +4,20 @@ function UserList() {
   const [listss, setListss] = useState([]);
   const [restoreList, setRestoreList] = useState([]);
   const userData = () => {
-    fetch("https://jsonplaceholder.typicode.com/users")
+    try {
+      fetch("https://jsonplaceholder.typicode.com/users")
       .then((res) => {
-        return res.json();
+        if (res.ok) {
+          return res.json();
+        }
+        throw new Error('Something went wrong!!');
       })
       .then((data) => {
         setListss(data);
       });
+    } catch (error) {
+      console.log('Error :::: ', error)
+    }    
   };
   useEffect(() => {
     userData();
@@ -20,7 +27,7 @@ function UserList() {
       window.confirm(`Are you sure you want to delete row number: ${currentId} ?`)
     ) {
       setListss(listss.filter((val) => val.id !== data.id));
-      setRestoreList([...restoreList, data]);
+      restoreList.splice((data.id-1), 0, data);
     }
     return;
   };
@@ -29,7 +36,7 @@ function UserList() {
       window.confirm(`Are you sure you want to restore row number: ${currentId} ?`)
     ) {
       setRestoreList(restoreList.filter((val) => val.id !== restoreData.id));
-      setListss([...listss, restoreData]);
+      listss.splice((restoreData.id-1), 0, restoreData);
     }
     return;
   };
